@@ -4,7 +4,7 @@
   "description": "server app to route nfc holders",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "node server.js"
   },
   "author": "daniel ishigami",
   "license": "ISC",
