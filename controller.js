@@ -29,7 +29,7 @@ const whitelist = ['1234', '4321']
         console.log("Message sent: %s", info.messageId);
     }
 
-//EXECUTE QUERY
+//EMAIL FEATURE
 exports.getNFCresource = async (req, res) => {
     
     try {
@@ -38,6 +38,28 @@ exports.getNFCresource = async (req, res) => {
         if(whitelist.includes(user)) {
             await main();
             return res.status(200).send('Email sent')
+        } else {
+            return res.status(403).send('Access restricted')
+        }
+    } catch (err) {
+        res.status(404).json({
+            status: 'fail',
+            message: err
+        })
+    }
+};
+
+
+//REDIRECT FEATURE
+exports.getNFCresource = async (req, res) => {
+    
+    const whitelist = ['1234', '4321']
+    
+    try {
+        const user = req.query.user;
+
+        if(whitelist.includes(user)) {
+            return res.redirect('https://fanaverse.io')
         } else {
             return res.status(403).send('Access restricted')
         }
