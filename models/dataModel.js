@@ -4,7 +4,6 @@ const nfcSchema = new mongoose.Schema({
     type: {
         type: String,
         required: [true, 'You must have a type set as either merchant or charity'],
-        unique: true,
         trim: true
     },
     id: {
