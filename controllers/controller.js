@@ -2,14 +2,9 @@ const { query } = require('express');
 const dotenv = require('dotenv');
 const nodemailer = require('nodemailer');
 const NFC = require('../models/dataModel')
-
 dotenv.config()
 
-
-const whitelist = ['1234', '4321']
-
-    
-    const transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransport({
         service: process.env.EMAIL_SERVICE,
         auth: {
             user: process.env.EMAIL_USERNAME,
@@ -17,30 +12,22 @@ const whitelist = ['1234', '4321']
         }
     });
 
-    
-    const main = async () => {
-        const info = await transporter.sendMail({
-            from: '"Daniel 👻" <daniel@myfana.com>',
-            to: "robin@myfana.com",
-            subject: "Oh Mayte I Swiped Again",
-            text: "Brace yourself",
-            html: "<b><b>"
-        });
-    
-        console.log("Message sent: %s", info.messageId);
-    }
 
-//EMAIL FEATURE
 exports.getNFCresource = async (req, res) => {
-    
     try {
-        const user = req.query.user;
+        const { type, reward, key } = req.query;
+        const entry = await NFC.findOne({ type, reward: Number(reward), key});
+        if (!entry) {
+            return res.status(403).send('Access denied');
+        }
+        switch (reward) {
+            case '1': 
+            return res.redirect(entry.target);
 
-        if(whitelist.includes(user)) {
-            await main();
+            case '2': 
+            const { from, to, subject, text, html } = entry.email;
+            await transporter.sendMail({from, to, subject, text, html});
             return res.status(200).send('Email sent')
-        } else {
-            return res.status(403).send('Access restricted')
         }
     } catch (err) {
         res.status(404).json({
@@ -49,25 +36,3 @@ exports.getNFCresource = async (req, res) => {
         })
     }
 };
-
-
-//REDIRECT FEATURE
-// exports.getNFCresource = async (req, res) => {
-    
-//     const whitelist = ['1234', '4321']
-    
-//     try {
-//         const user = req.query.user;
-
-//         if(whitelist.includes(user)) {
-//             return res.redirect('https://fanaverse.io')
-//         } else {
-//             return res.status(403).send('Access restricted')
-//         }
-//     } catch (err) {
-//         res.status(404).json({
-//             status: 'fail',
-//             message: err
-//         })
-//     }
-// };
